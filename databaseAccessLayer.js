@@ -53,8 +53,21 @@ function addUser(postData, callback) {
 	})
 }
 
+function deleteUser(webUserId, callback) {
+    let sqlDeleteUser = "DELETE FROM web_user WHERE web_user_id = :userID";
+    let params = {
+        userID: webUserId
+    };
+    console.log(sqlDeleteUser);
+    database.query(sqlDeleteUser, params, (err, results, fields) => {
+        if (err) {
+            callback(err, null);
+} else {
+            console.log(results);
+            callback(null, results);
+        }
+}); }
 
 
 
-
-module.exports = {getAllUsers, addUser}
+module.exports = {getAllUsers, addUser, deleteUser}

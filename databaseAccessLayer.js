@@ -14,5 +14,47 @@ function getAllUsers(callback) {
 	});
 }
 
+const passwordPepper = "SeCretPeppa4Mysal+";
 
-module.exports = {getAllUsers}
+function addUser(postData, callback) {
+	let sqlInsertSalt = "INSERT INTO web_user (first_name, last_name, email, password_salt) VALUES (:first_name, :last_name, :email, sha2(UUID(),512));";
+	let params = {
+		first_name: postData.first_name,
+		last_name: postData.last_name,
+		email: postData.email
+	};
+	console.log(sqlInsertSalt);
+	database.query(sqlInsertSalt, params, (err, results, fields) => {
+		if(err) {
+			console.log(err);
+			callback(err, null);
+		}
+		else {
+			// if insert successful, record the auto_increment ID called insertedID
+			let insertedID = results.insertID;
+			let updatePasswordHash = "UPDATE web_user SET password_hash = sha2(concat(:password,:pepper,password_salt),512) WHERE web_user_id = :userId;"
+			let params2 = {
+				password: postData.password,
+				pepper: passwordPepper,
+				userID: insertedID
+			}
+			console.log(updatePasswordHash)
+			database.query(updatePasswordHash, params, (err, results, fields) => {
+				if(err) {
+					console.log(err);
+					callback(err, null);
+				}
+				else {
+					console.log(results);
+					callback(null, results);
+				}
+			})
+		}
+	})
+}
+
+
+
+
+
+module.exports = {getAllUsers, addUser}

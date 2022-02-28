@@ -10,35 +10,39 @@
 			<div class="maincolumns columns is-desktop is-vcentered">
 				<div class="column is-10 is-offset-1 notification is-info is-light box container">
 					<div class="title">
-						Web Users
+						All Restaurants
 					</div>
-					<% if (locals.allUsers) { %>
+					<% if (locals.allRestaurants) { %>
 						<div class="table-container">
 						<table class="table is-bordered is-hoverable is-striped is-narrow">
 							<thead>
 							<tr>
-								<th> First Name </th>
-								<th> Last Name </th>
-								<th> Email </th>
+								<th> name  </th>
+								<th> description </th>
+						
 								<th> &nbsp; </th>
 							</tr>
 							</thead>
 							<% let i=0; %>
-							<% for(i=0; i < allUsers.length; i++) { %>
+							<% for(i=0; i < allRestaurants.length; i++) { %>
 							<tr>
-								<td><%= allUsers[i].first_name %></td>
-								<td><%= allUsers[i].last_name %></td>
-								<td><%= allUsers[i].email %></td>
-								<td><a href="/deleteUser?id=<%= allUsers[i].web_user_id %>">
+								<td><%= allRestaurants[i].name %></td>
+								<td><%= allRestaurants[i].description %></td>
+								<td><a href="/deleteRestaurant?id=<%= allRestaurants[i].restaurant_id %>">
 									<span class="icon is-small">
-										<i class="fas fa-user-times"></i>
+										<i class="fas fa-trash"></i>
+									</span></a>
+								</td>
+								<td><a href="/review?id=<%= allRestaurants[i].restaurant_id %>&name=<%= allRestaurants[i].name%>">
+									<span class="icon is-small">
+										<i class="fas fa-star"></i>
 									</span></a>
 								</td>
 							</tr>
 							<% } %>
 							<tfoot>
 								<tr> <td colspan="4">
-								There are <%= i %> users.
+								There are <%= i %> restaurants.
 								</td> </tr>
 							</tfoot>
 						</table>
@@ -48,32 +52,23 @@
 			</div>
 		</section>
 
-		<form action="addUser" method="post">
+		<form action="addRestaurant" method="post">
 			<div class="field is-horizontal">
 			  <div class="field-label is-normal">
-				  <label class="label">Add New User</label>
+				  <label class="label">Add Restaurant</label>
 			  </div>
 			  <div class="field-body">
 				  <div class="field">
 					<p class="control is-expanded">
-						 <input name="first_name" class="input" type="text"
-												placeholder="First Name">
+						 <input name="name" class="input" type="text"
+												placeholder="Restaurant Name">
 	 </p> </div>
 				  <div class="field">
 					<p class="control is-expanded">
-						 <input name="last_name" class="input" type="text"
-											   placeholder="Last Name">
+						 <input name="description" class="input" type="text"
+											   placeholder="description">
 	 </p> </div>
-				  <div class="field">
-					<p class="control is-expanded">
-						 <input name="email" class="input" type="email"
-										   placeholder="Email">
-	 </p> </div>
-				  <div class="field">
-					<p class="control is-expanded">
-						 <input name="password" class="input" type="password"
-											  placeholder="Password">
-	 </p> </div>
+				  
 				  <div class="field">
 						 <button class="button is-link">
 								<span>Add</span>

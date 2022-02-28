@@ -1,8 +1,28 @@
 const database = include('/databaseConnection');
 
 
-function getAllUsers(callback) {
-	let sqlQuery = "SELECT web_user_id, first_name, last_name, email FROM web_user";
+function getAllReviews(restaurantId, callback) {
+	let sqlQuery = "SELECT review_id, review.restaurant_id, reviewer_name, details, rating, name FROM  REVIEW INNER JOIN restaurant ON review.restaurant_id = restaurant.restaurant_id WHERE review.restaurant_id = :restaurantId";
+	let params = {
+		restaurantId: restaurantId
+	};
+
+	database.query(sqlQuery, params, (err, results, fields) => {
+		if (err) {
+			callback(err, null);
+		}
+		else {
+			console.log(results);
+			callback(null, results);
+		}
+	});
+}
+
+
+
+
+function getAllRestaurants(callback) {
+	let sqlQuery = "SELECT restaurant_id, name, description FROM restaurant;";
 	database.query(sqlQuery, (err, results, fields) => {
 		if (err) {
 			callback(err, null);
@@ -10,64 +30,87 @@ function getAllUsers(callback) {
 		else {
 			console.log(results);
 			callback(null, results);
-		}		
+		}
 	});
 }
 
-const passwordPepper = "SeCretPeppa4Mysal+";
 
-function addUser(postData, callback) {
-	let sqlInsertSalt = "INSERT INTO web_user (first_name, last_name, email, password_salt) VALUES (:first_name, :last_name, :email, sha2(UUID(),512));";
-	let params = {
-		first_name: postData.first_name,
-		last_name: postData.last_name,
-		email: postData.email
+
+function addRestaurant(postData, callback) {
+	let sqlInsertSalt = "INSERT INTO restaurant (name, description) VALUES (:name, :description);";
+	 let params = {
+			name: postData.name,
+			description: postData.description,
 	};
 	console.log(sqlInsertSalt);
+	// console.log(params);
 	database.query(sqlInsertSalt, params, (err, results, fields) => {
-		if(err) {
+		if (err) {
 			console.log(err);
 			callback(err, null);
-		}
-		else {
-			// if insert successful, record the auto_increment ID called insertedID
-			let insertedID = results.insertID;
-			let updatePasswordHash = "UPDATE web_user SET password_hash = sha2(concat(:password,:pepper,password_salt),512) WHERE web_user_id = :userId;"
-			let params2 = {
-				password: postData.password,
-				pepper: passwordPepper,
-				userID: insertedID
+	}  else {
+				
+				 callback(null, results);
 			}
-			console.log(updatePasswordHash)
-			database.query(updatePasswordHash, params, (err, results, fields) => {
-				if(err) {
-					console.log(err);
-					callback(err, null);
-				}
-				else {
-					console.log(results);
-					callback(null, results);
-				}
-			})
+	}); }
+
+
+
+
+function deleteRestaurant(restaurantId, callback) {
+	let sqlDeleterestaurant = "DELETE FROM restaurant WHERE restaurant_id = :restaurantID";
+	let params = {
+		restaurantID: restaurantId
+	};
+	console.log(sqlDeleterestaurant);
+	database.query(sqlDeleterestaurant, params, (err, results, fields) => {
+		if (err) {
+			callback(err, null);
+		} else {
+			console.log(results);
+			callback(null, results);
 		}
-	})
+	});
 }
 
-function deleteUser(webUserId, callback) {
-    let sqlDeleteUser = "DELETE FROM web_user WHERE web_user_id = :userID";
-    let params = {
-        userID: webUserId
-    };
-    console.log(sqlDeleteUser);
-    database.query(sqlDeleteUser, params, (err, results, fields) => {
-        if (err) {
-            callback(err, null);
-} else {
-            console.log(results);
-            callback(null, results);
-        }
-}); }
+function deleteReview(reviewId, callback) {
+	let sqlDeleteReview = "DELETE FROM review WHERE review_id = :reviewId";
+	let params = {
+		reviewId: reviewId
+	};
+	console.log(sqlDeleteReview);
+	database.query(sqlDeleteReview, params, (err, results, fields) => {
+		if (err) {
+			callback(err, null);
+		} else {
+			console.log(results);
+			callback(null, results);
+		}
+	});
+}
+
+
+function addReview(postData, restaurantID, callback) {
+	let sqlInsertSalt = "INSERT INTO review (restaurant_id, reviewer_name, details, rating) VALUES (:restaurant_id, :reviewer_name, :details, :rating);";
+	 let params = {
+			restaurant_id: restaurantID,
+			reviewer_name: postData.reviewer_name,
+			details: postData.details,
+			rating: postData.rating
+	};
+	console.log(sqlInsertSalt);
+	console.log("this is ", params);
+	database.query(sqlInsertSalt, params, (err, results, fields) => {
+		if (err) {
+			console.log(err);
+			callback(err, null);
+	}  else {
+				
+				 callback(null, results);
+			}
+	}); }
 
 
 
-module.exports = {getAllUsers, addUser, deleteUser}
+
+module.exports = { getAllRestaurants, addRestaurant, deleteRestaurant, getAllReviews, deleteReview, addReview}
